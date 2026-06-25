@@ -1,0 +1,106 @@
+<%- include('partials/navbar_pembeli') %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Produk</title>
+</head>
+<body>
+
+    <% if (!product) { %>
+        <h1>Produk tidak ditemukan</h1>
+        <p>Mohon kembali ke dashboard dan pilih produk yang tersedia.</p>
+    <% } else { %>
+
+        <h1><%= product.name || 'Produk' %></h1>
+
+        <% const imageUrl = product.gambar ? ('/uploads/' + product.gambar) : '/images/default-product.png'; %>
+        <img
+            src="<%= imageUrl %>"
+            alt="<%= product.name || 'Produk' %>"
+            width="300"
+            style="display:block; margin-bottom:20px;"
+        >
+
+        <p>
+            <strong>Deskripsi:</strong>
+            <%= product.description || 'Deskripsi tidak tersedia' %>
+        </p>
+
+        <p>
+            <strong>Harga:</strong>
+            Rp <%= product.price != null ? product.price : '-' %>
+        </p>
+
+        <p>
+            <strong>Stok:</strong>
+            <%= product.stok != null ? product.stok : '-' %>
+        </p>
+
+        <p><strong>Review:</strong></p>
+
+        <% if (Array.isArray(product.reviews) && product.reviews.length) { %>
+            <% product.reviews.forEach((r, i) => { %>
+                <div style="border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;">
+                    <strong><%= r.name || 'Pengguna' %></strong>
+                    — <%= r.rating != null ? r.rating + '/5' : 'Tanpa rating' %>
+                    <br>
+
+                    <em><%= r.comment || 'Tidak ada komentar' %></em>
+                    <br>
+
+                    <small>
+                        <%= r.date ? new Date(r.date).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia' %>
+                    </small>
+
+                    <% if (Array.isArray(r.reply) && r.reply.length) { %>
+                        <button type="button" onclick="toggleReply(<%= i %>)" style="margin-top:5px;">
+                            Tampilkan Balasan
+                        </button>
+
+                        <div id="reply-<%= i %>" style="display:none; margin-left:20px; margin-top:10px; background:#f1f1f1; padding:10px; border-radius:5px;">
+                            <% r.reply.forEach(rep => { %>
+                                <strong><%= rep.name || 'Pengguna' %></strong>
+                                membalas:
+                                <br>
+
+                                <em><%= rep.comment || 'Tidak ada komentar' %></em>
+                                <br>
+
+                                <small>
+                                    <%= rep.date ? new Date(rep.date).toLocaleDateString('id-ID') : 'Tanggal tidak tersedia' %>
+                                </small>
+
+                                <br><br>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <em>Belum ada review.</em>
+        <% } %>
+
+    <% } %>
+
+    <script>
+        function toggleReply(index) {
+            const replyDiv = document.getElementById('reply-' + index);
+            if (!replyDiv) return;
+
+            const button = document.querySelector('button[onclick="toggleReply(' + index + ')"]');
+            if (!button) return;
+
+            if (replyDiv.style.display === 'none') {
+                replyDiv.style.display = 'block';
+                button.textContent = 'Sembunyikan Balasan';
+            } else {
+                replyDiv.style.display = 'none';
+                button.textContent = 'Tampilkan Balasan';
+            }
+        }
+    </script>
+
+</body>
+</html>

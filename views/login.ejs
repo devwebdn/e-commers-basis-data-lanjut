@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Login</h2>
+
+            <form id="loginForm" action="/api/login" method="POST">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Login
+                </button>
+
+                <p class="signup-link">
+                    Don't have an account?
+                    <a href="/register">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get username and password values
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Send login request to the API
+            fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Login berhasil") {
+
+                    // Redirect based on user role
+                    const role = data.role;
+
+                    // Get the user role from the response
+                    let redirectTo = '';
+
+                    if (role === 'pembeli') {
+                        redirectTo = '/pembeli/dashboard';
+                    } else if (role === 'admin') {
+                        redirectTo = '/admin/dashboard';
+                    } else if (role === 'kasir') {
+                        redirectTo = '/kasir/dashboard';
+                    } else if (role === 'manajer') {
+                        redirectTo = '/manajer/dashboard';
+                    } else {
+                        alert('Role tidak dikenali');
+                        return;
+                    }
+
+                    // Redirect to the appropriate dashboard
+                    window.location.href = redirectTo;
+
+                } else {
+                    alert('Login failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during login.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<%- include('../partials/navbar_manajer') %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <h1>Laporan Penjualan</h1>
+
+    <section>
+        <h2>Tren Penjualan Harian</h2>
+        <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </section>
+
+    <section>
+        <h2>Penjualan Produk</h2>
+        <div class="chart-container">
+            <canvas id="barChart"></canvas>
+        </div>
+    </section>
+
+    <section>
+        <h2>Persentase Penjualan (per Role)</h2>
+        <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </section>
+
+    <script>
+        /*const lineChartData = <%- JSON.stringify(lineChart) %>;
+        const barChartData = <%- JSON.stringify(barChart) %>;
+        const pieChartData = <%- JSON.stringify(pieChart) %>;*/
+
+        // Line Chart
+        new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: {
+                labels: lineChartData.labels,
+                datasets: [{
+                    label: 'Total Penjualan Harian',
+                    data: lineChartData.data,
+                    fill: true,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Tren Penjualan Harian'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Bar Chart
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: barChartData.labels,
+                datasets: [{
+                    label: 'Jumlah Terjual',
+                    data: barChartData.data,
+                    backgroundColor: 'rgba(100, 149, 237, 0.7)',
+                    borderColor: 'rgba(100, 149, 237, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Produk Terjual'
+                    }
+                }
+            }
+        });
+
+        // Pie Chart
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: pieChartData.labels,
+                datasets: [{
+                    data: pieChartData.data,
+                    backgroundColor: [
+                        '#6495ED',
+                        '#FFD700',
+                        '#FF7F50',
+                        '#90EE90'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Persentase Penjualan per Role'
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

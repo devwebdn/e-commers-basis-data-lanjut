@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Struk Pembelian</title>
+
+    <style>
+        body {
+            font-family: monospace;
+            width: 250px; /* Ukuran thermal printer 58mm */
+            margin: auto;
+            padding: 10px;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .line {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+
+        .total {
+            font-weight: bold;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .print-btn {
+            display: none;
+        }
+
+        @media print {
+            .print-btn,
+            a {
+                display: none;
+            }
+
+            body {
+                width: auto;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body id="struk">
+
+    <div class="center">
+        <h3>TOKO ASJK</h3>
+        <p>Jl. Raya No. 123, Blitar</p>
+
+        <div class="line"></div>
+
+        <p>Kasir: <%= kasir.username %></p>
+        <p>Tanggal: <%= new Date().toLocaleString('id-ID') %></p>
+
+        <div class="line"></div>
+    </div>
+
+    <% items.forEach(item => { %>
+        <div>
+            <%= item.name %><br>
+
+            <span>
+                <%= item.quantity %> x Rp
+                <%= item.price.toLocaleString('id-ID') %>
+            </span>
+
+            <div class="right">
+                Rp <%= (item.quantity * item.price).toLocaleString('id-ID') %>
+            </div>
+        </div>
+    <% }) %>
+
+    <div class="line"></div>
+
+    <div class="right total">
+        TOTAL: Rp <%= total.toLocaleString('id-ID') %>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="center">
+        <p>TERIMA KASIH!</p>
+        <p>~ ~ ~</p>
+    </div>
+
+    <div class="print-btn center">
+        <button onclick="window.print()">
+            🖨 Cetak
+        </button>
+
+        <br><br>
+
+        <a href="/kasir/dashboard">
+            ← Kembali ke Dashboard
+        </a>
+    </div>
+
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+    </script>
+
+</body>
+</html>

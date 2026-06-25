@@ -1,0 +1,169 @@
+<%- include('../partials/navbar_kasir') %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if (checkout === 'success' && orderId) { %>
+<script>
+    Swal.fire({
+        title: 'Checkout Berhasil!',
+        text: 'Ingin cetak struk?',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Ya',
+        cancelButtonText: 'Tidak'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const strukUrl = `/kasir/struk/<%= orderId %>`;
+
+            window.open(
+                strukUrl,
+                'StrukPopup',
+                'width=350,height=600,scrollbars=yes'
+            );
+        }
+    });
+</script>
+<% } %>
+
+<h2>Selamat datang, <%= user.username %>!</h2>
+<p>Ini adalah dashboard khusus Kasir.</p>
+
+<br><br>
+
+<form id="checkoutForm" action="/kasir/checkout" method="POST">
+
+    <div
+        class="product-grid"
+        style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        "
+    >
+        <% products.forEach(product => { %>
+
+        <div class="product-card">
+            <input
+                type="checkbox"
+                name="selectedProducts"
+                value="<%= product.id %>"
+                data-price="<%= product.price %>"
+                data-stock="<%= product.stok %>"
+                onchange="toggleQty(this)"
+            >
+
+            <img
+                src="/uploads/<%= product.gambar %>"
+                style="width: 100%; height: 200px; object-fit: cover;"
+                alt="<%= product.name %>"
+            >
+
+            <a href="/kasir/produk/<%= product.mongoId %>">
+                <%= product.name %>
+            </a>
+
+            <p>
+                Rp <%= product.price.toLocaleString('id-ID') %>
+            </p>
+
+            <p style="font-size: 14px;">
+                <%= product.description %>
+            </p>
+
+            <p>
+                Stok:
+                <span class="stok-display">
+                    <%= product.stok %>
+                </span>
+            </p>
+
+            <input
+                type="number"
+                name="quantity_<%= product.id %>"
+                value="1"
+                min="1"
+                max="<%= product.stok %>"
+                style="width: 60px;"
+                disabled
+            >
+        </div>
+
+        <% }) %>
+    </div>
+
+    <!-- Total dan Checkout -->
+    <div style="margin-top: 20px;">
+        <p>
+            <strong>
+                Total: Rp
+                <span id="totalBelanja">0</span>
+            </strong>
+        </p>
+
+        <input
+            type="hidden"
+            name="orderData"
+            id="orderData"
+        >
+
+        <button type="submit">
+            Checkout
+        </button>
+    </div>
+
+</form>
+
+<script>
+    function toggleQty(checkbox) {
+        const qtyInput = checkbox
+            .closest('.product-card')
+            .querySelector(
+                `input[name="quantity_${checkbox.value}"]`
+            );
+
+        qtyInput.disabled = !checkbox.checked;
+
+        updateTotal();
+    }
+
+    document
+        .querySelectorAll('input[type="number"]')
+        .forEach(input => {
+            input.addEventListener('input', updateTotal);
+        });
+
+    function updateTotal() {
+        let total = 0;
+        const selected = [];
+
+        document
+            .querySelectorAll(
+                'input[name="selectedProducts"]:checked'
+            )
+            .forEach(checkbox => {
+                const productId = checkbox.value;
+                const price = parseInt(checkbox.dataset.price);
+
+                const qtyInput = document.querySelector(
+                    `input[name="quantity_${productId}"]`
+                );
+
+                const qty = parseInt(qtyInput.value);
+
+                if (qty > 0) {
+                    total += price * qty;
+
+                    selected.push({
+                        id: productId,
+                        quantity: qty
+                    });
+                }
+            });
+
+        document.getElementById('totalBelanja').textContent =
+            total.toLocaleString('id-ID');
+
+        document.getElementById('orderData').value =
+            JSON.stringify(selected);
+    }
+</script>

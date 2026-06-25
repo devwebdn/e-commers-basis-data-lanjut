@@ -1,0 +1,100 @@
+<%- include('../partials/navbar_pembeli') %>
+
+<% orders.forEach(function(order) { %>
+    <div class="order-box">
+
+        <div class="order-header">
+            Order ID: <%= order.id %> |
+            Tanggal:
+            <%= new Date(order.created_at).toLocaleDateString() %>
+        </div>
+
+        <% order.items.forEach(function(item) { %>
+
+            <div class="item-box">
+
+                <div class="item-name">
+                    <%= item.name %>
+                </div>
+
+                <% if (item.review) { %>
+
+                    <div class="review-display">
+
+                        <p>
+                            <strong>Rating:</strong>
+                            <%= item.review.rating %>/5
+                        </p>
+
+                        <p>
+                            <strong>Ulasan:</strong>
+                            <%= item.review.comment %>
+                        </p>
+
+                        <small>
+                            <em>
+                                Oleh:
+                                <%= item.review.name %> -
+                                <%= new Date(item.review.date).toLocaleDateString() %>
+                            </em>
+                        </small>
+
+                    </div>
+
+                <% } else { %>
+
+                    <form
+                        class="review-form"
+                        action="/pembeli/review/<%= item.product_id %>"
+                        method="POST"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="userId"
+                            value="<%= user.id %>"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="userName"
+                            value="<%= user.username %>"
+                        >
+
+                        <label>Rating:</label>
+
+                        <select name="rating">
+                            <option value="5">5 - Sangat Baik</option>
+                            <option value="4">4 - Baik</option>
+                            <option value="3">3 - Cukup</option>
+                            <option value="2">2 - Kurang</option>
+                            <option value="1">1 - Sangat Kurang</option>
+                        </select>
+
+                        <br>
+
+                        <label>Komentar:</label>
+                        <br>
+
+                        <textarea
+                            name="comment"
+                            rows="3"
+                        ></textarea>
+
+                        <br>
+
+                        <button type="submit">
+                            Kirim Review
+                        </button>
+
+                    </form>
+
+                <% } %>
+
+            </div>
+
+        <% }); %>
+
+    </div>
+
+<% }); %>

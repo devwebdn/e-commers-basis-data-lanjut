@@ -1,0 +1,95 @@
+<%- include('../partials/navbar_manajer') %>
+
+<head>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<h1>Laporan Transaksi</h1>
+
+<form
+    method="GET"
+    action="/manajer/laporan"
+    style="margin-bottom: 20px;"
+>
+    <label>
+        Dari Tanggal:
+        <input
+            type="date"
+            name="start_date"
+            value="<%= startDate || '' %>"
+            required
+        >
+    </label>
+
+    <label>
+        Sampai Tanggal:
+        <input
+            type="date"
+            name="end_date"
+            value="<%= endDate || '' %>"
+            required
+        >
+    </label>
+
+    <button type="submit">
+        Filter
+    </button>
+</form>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>ID Order</th>
+            <th>Kasir</th>
+            <th>Total (Rp)</th>
+            <th>Tanggal</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% let grandTotal = 0; %>
+
+        <% if (reportData && reportData.length) { %>
+
+            <% reportData.forEach(order => { %>
+
+                <% grandTotal += order.total; %>
+
+                <tr>
+                    <td><%= order.id %></td>
+                    <td><%= order.username %></td>
+                    <td>
+                        Rp<%= order.total.toLocaleString('id-ID') %>
+                    </td>
+                    <td>
+                        <%= new Date(order.created_at).toLocaleString('id-ID') %>
+                    </td>
+                </tr>
+
+            <% }) %>
+
+        <% } else { %>
+
+            <tr>
+                <td colspan="4">
+                    Belum ada transaksi.
+                </td>
+            </tr>
+
+        <% } %>
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td colspan="2">
+                <strong>Grand Total</strong>
+            </td>
+
+            <td colspan="2">
+                <strong>
+                    Rp<%= grandTotal.toLocaleString('id-ID') %>
+                </strong>
+            </td>
+        </tr>
+    </tfoot>
+</table>
