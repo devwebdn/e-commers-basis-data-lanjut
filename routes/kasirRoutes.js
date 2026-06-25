@@ -69,7 +69,24 @@ router.post('/checkout', async (req, res) => {
     // console.log('orderData raw:', req.body.orderData);
 
     const userId = req.session.user.id;
-    const orderItems = JSON.parse(req.body.orderData);
+    const rawOrderData = req.body.orderData;
+
+    // Validasi: pastikan orderData tidak kosong
+    if (!rawOrderData || rawOrderData.trim() === '' || rawOrderData.trim() === '[]') {
+        return res.status(400).send('Tidak ada produk yang dipilih. Silakan pilih produk terlebih dahulu.');
+    }
+
+    let orderItems;
+    try {
+        orderItems = JSON.parse(rawOrderData);
+    } catch (parseErr) {
+        console.error('Gagal parse orderData:', parseErr);
+        return res.status(400).send('Data pesanan tidak valid.');
+    }
+
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+        return res.status(400).send('Tidak ada produk yang dipilih.');
+    }
 
     try {
         const [orderResult] = await db.promise().execute(

@@ -30,7 +30,7 @@
 
 <br><br>
 
-<form id="checkoutForm" action="/kasir/checkout" method="POST">
+<form id="checkoutForm" action="/kasir/checkout" method="POST" onsubmit="return validateCheckout()">
 
     <div
         class="product-grid"
@@ -166,4 +166,23 @@
         document.getElementById('orderData').value =
             JSON.stringify(selected);
     }
+
+    function validateCheckout() {
+        const orderData = document.getElementById('orderData').value;
+        let items = [];
+        try {
+            items = JSON.parse(orderData);
+        } catch (e) {
+            items = [];
+        }
+
+        if (!items || items.length === 0) {
+            alert('Pilih minimal satu produk sebelum checkout!');
+            return false;
+        }
+        return true;
+    }
+
+    // Inisialisasi orderData saat halaman dimuat
+    updateTotal();
 </script>
