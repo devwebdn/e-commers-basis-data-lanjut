@@ -1,53 +1,90 @@
 <%- include('../partials/navbar_admin') %>
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Product Manager</title>
-    <link rel="stylesheet" href="/styles.css">
-  </head>
-  <body>
-    <h2>Selamat datang, <%= user.username %>!</h2>
-    <p>Ini adalah dashboard khusus Admin.</p>
-    
-    <h1>Products</h1>
-    
-    <form action="/admin/add" method="POST" enctype="multipart/form-data">
-      <input type="number" name="id" placeholder="ID" required>
-      <input type="text" name="name" placeholder="Name" required>
-      <input type="text" name="description" placeholder="Deskripsi" required>
-      <input type="number" step="0.01" name="price" placeholder="Price" required>
-      <input type="number" name="stok" placeholder="Stok" required>
-      <input type="file" name="gambar" accept="image/*">
-      <button type="submit">Add Product</button>
-    </form>
-    
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Deskripsi</th>
-          <th>Price</th>
-          <th>Stok</th>
-          <th>Gambar</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% products.forEach(product => { %>
-          <tr>
-            <form action="/admin/update/<%= product.id %>" method="POST" enctype="multipart/form-data">
-              <%= product.id %>
-              
-              <% if (product.gambar) { %>
-                <% } else { %>
-                <% } %>
-              
-              UpdateDelete
-            </form>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Product Manager</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    th, td { text-align: left; vertical-align: middle; padding: 5px; }
+    img { width: 120px; height: 120px; object-fit: cover; display: block; }
+    input[type="text"], input[type="number"] { padding: 2px; }
+    form { margin: 0; }
+  </style>
+</head>
+<body>
+
+  <h2>Selamat datang, <%= user.username %>!</h2>
+  <p>Ini adalah dashboard khusus Admin.</p>
+
+  <h1>Products</h1>
+
+  <!-- Form tambah produk (satu baris) -->
+  <form action="/admin/add" method="POST" enctype="multipart/form-data">
+    <input type="number" name="id"          placeholder="ID"       required>
+    <input type="text"   name="name"        placeholder="Name"     required>
+    <input type="text"   name="description" placeholder="Deskripsi" required>
+    <input type="number" step="0.01" name="price" placeholder="Price" required>
+    <input type="number" name="stok"        placeholder="Stok"     required>
+    <input type="file"   name="gambar"      accept="image/*">
+    <button type="submit">Add Product</button>
+  </form>
+
+  <br>
+
+  <!-- Tabel produk -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Deskripsi</th>
+        <th>Price</th>
+        <th>Stok</th>
+        <th>Gambar</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% products.forEach(product => { %>
+      <tr>
+        <form action="/admin/update/<%= product.id %>" method="POST" enctype="multipart/form-data">
+          <td><%= product.id %></td>
+
+          <td>
+            <input type="text" name="name" value="<%= product.name %>" required>
+          </td>
+
+          <td>
+            <input type="text" name="description" value="<%= product.description %>">
+          </td>
+
+          <td>
+            <input type="number" step="0.01" name="price" value="<%= product.price %>" required>
+          </td>
+
+          <td>
+            <input type="number" name="stok" value="<%= product.stok %>" required>
+          </td>
+
+          <td>
+            <% if (product.gambar) { %>
+              <img src="/uploads/<%= product.gambar %>" alt="<%= product.name %>">
+            <% } else { %>
+              <span>-</span>
+            <% } %>
+          </td>
+
+          <td>
+            <button type="submit">Update</button>
+            <a href="/admin/delete/<%= product.id %>"
+               onclick="return confirm('Hapus produk <%= product.name %>?')">Delete</a>
+          </td>
+        </form>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+</body>
 </html>
